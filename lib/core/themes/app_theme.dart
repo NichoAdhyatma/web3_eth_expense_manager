@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
+  static final InputBorder defaultInputBorder = OutlineInputBorder(
+    borderRadius: BorderRadius.circular(10.0),
+  );
+
   final ThemeData _baseTheme = ThemeData(
     appBarTheme: const AppBarTheme(
       centerTitle: true,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      enabledBorder: defaultInputBorder,
+      focusedBorder: defaultInputBorder,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
@@ -33,6 +41,7 @@ class AppTheme {
           backgroundColor: WidgetStatePropertyAll(Colors.grey[300]),
         ),
       ),
+      inputDecorationTheme: _baseTheme.inputDecorationTheme,
     );
   }
 
@@ -52,6 +61,7 @@ class AppTheme {
         ),
       ),
       cardColor: Colors.black45,
+      inputDecorationTheme: _baseTheme.inputDecorationTheme,
     );
   }
 }
