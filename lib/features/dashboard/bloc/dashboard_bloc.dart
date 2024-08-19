@@ -41,9 +41,9 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     emit(DashboardLoading());
 
     try {
-      const String rpcUrl = "http://192.168.187.59:7545";
+      const String rpcUrl = "http://192.168.0.113:7545";
 
-      const String socketUrl = "ws://192.168.187.59:7545";
+      const String socketUrl = "ws://192.168.0.113:7545";
 
       const String privateKey =
           '0xb52019f9891a725af0e4eda4098995f29caf18067592d7f4a8382fc9a8768a33';
@@ -97,9 +97,9 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         TransactionModel transaction = TransactionModel(
           amount: transactionsData[1][i].toInt(),
           reason: transactionsData[2][i],
-          address: transactionsData[0][i],
-          timestamp:
-              DateTime.fromMicrosecondsSinceEpoch(transactionsData[3][i].toInt()),
+          address: transactionsData[0][i].toString(),
+          timestamp: DateTime.fromMicrosecondsSinceEpoch(
+              transactionsData[3][i].toInt()),
         );
 
         trans.add(transaction);
@@ -120,29 +120,57 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
   FutureOr<void> dashboardDepositEvent(
       DashboardDepositEvent event, Emitter<DashboardState> emit) async {
-    final data = await _client!.call(
-      contract: _deployedContract,
-      function: _deposit,
-      params: [
-        event.transactionModel.amount,
-        event.transactionModel.reason,
-      ],
-    );
+    try {
+      final deposit = Transaction.callContract(
+        contract: _deployedContract,
+        function: _deposit,
+        parameters: [
+          BigInt.from(event.transactionModel.amount),
+          event.transactionModel.reason
+        ],
+        value: EtherAmount.inWei(BigInt.from(event.transactionModel.amount)),
+      );
 
-    print(data);
+      final result = await _client!.sendTransaction(
+        _credentials,
+        deposit,
+        chainId: 1337,
+        fetchChainIdFromNetworkId: false,
+      );
+
+      print("Deposit transaction hash: $result");
+      add(DashboardInitialFetchEvent());
+    } catch (e) {
+      print(e.toString());
+      emit(DashboardError());
+    }
   }
 
   FutureOr<void> dashboardWithdrawEvent(
       DashboardWithdrawEvent event, Emitter<DashboardState> emit) async {
-    final data = await _client!.call(
-      contract: _deployedContract,
-      function: _withdraw,
-      params: [
-        event.transactionModel.amount,
-        event.transactionModel.reason,
-      ],
-    );
+    try {
+      final withdraw = Transaction.callContract(
+        contract: _deployedContract,
+        function: _withdraw,
+        parameters: [
+          BigInt.from(event.transactionModel.amount),
+          event.transactionModel.reason
+        ],
+      );
 
-    print(data);
+      final result = await _client!.sendTransaction(
+        _credentials,
+        withdraw,
+        chainId: 1337,
+        fetchChainIdFromNetworkId: false,
+      );
+
+      print("Deposit transaction hash: $result");
+
+      add(DashboardInitialFetchEvent());
+    } catch (e) {
+      print(e.toString());
+      emit(DashboardError());
+    }
   }
 }

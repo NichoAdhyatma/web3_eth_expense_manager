@@ -5,6 +5,7 @@ import 'package:flutter_web3/features/dashboard/bloc/dashboard_bloc.dart';
 import 'package:flutter_web3/features/deposit/ui/deposit_page.dart';
 import 'package:flutter_web3/features/withdraw/ui/withdraw_page.dart';
 import 'package:flutter_web3/generated/assets.dart';
+import 'package:intl/intl.dart';
 
 class DashboardPage extends StatefulWidget {
   static final route =
@@ -143,6 +144,9 @@ class _DashboardPageState extends State<DashboardPage> {
                         final transaction = state.transactions[index];
 
                         return Container(
+                          margin: const EdgeInsets.only(
+                            bottom: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(10.0),
@@ -160,8 +164,10 @@ class _DashboardPageState extends State<DashboardPage> {
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                2.heightSB,
                                 Text(
                                   transaction.address,
+                                  overflow: TextOverflow.ellipsis,
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                                 2.heightSB,
@@ -169,7 +175,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               ],
                             ),
                             trailing: Text(
-                              transaction.timestamp.toString(),
+                              DateFormat.yMMMd().format(transaction.timestamp),
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium!
@@ -180,7 +186,6 @@ class _DashboardPageState extends State<DashboardPage> {
                           ),
                         );
                       },
-
                     )
                   ],
                 ),

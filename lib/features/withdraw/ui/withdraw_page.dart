@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_web3/core/utils/sizedbox_ext.dart';
+import 'package:flutter_web3/features/dashboard/bloc/dashboard_bloc.dart';
+import 'package:flutter_web3/models/transaction_model.dart';
 
 class WithdrawPage extends StatelessWidget {
   static route() => MaterialPageRoute(
@@ -59,7 +62,19 @@ class WithdrawPage extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red[500],
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      context.read<DashboardBloc>().add(
+                            DashboardWithdrawEvent(
+                              TransactionModel(
+                                amount: int.parse(amountController.text),
+                                reason: reasonController.text,
+                                address: addressController.text,
+                                timestamp: DateTime.now(),
+                              ),
+                            ),
+                          );
+                      Navigator.of(context).pop();
+                    },
                     child: const Text(
                       '- WITHDRAW',
                       style: TextStyle(
